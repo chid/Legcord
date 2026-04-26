@@ -27,7 +27,7 @@ export const config: Configuration = {
 
     linux: {
         icon: "build/icon.icns",
-        target: ["AppImage", "deb", "rpm", "tar.gz"],
+        target: ["AppImage", "deb", "rpm", "tar.gz", "flatpak"],
         maintainer: "linux@legcord.app",
         category: "Network",
         desktop: {
@@ -35,6 +35,24 @@ export const config: Configuration = {
                 StartupWMClass: "legcord",
             },
         },
+    },
+
+    flatpak: {
+        license: "license.txt",
+        runtimeVersion: "24.08",
+        baseVersion: "24.08",
+        finishArgs: [
+            "--share=ipc",
+            "--share=network",
+            "--socket=x11",
+            "--socket=wayland",
+            "--socket=pulseaudio",
+            "--device=all",
+            "--talk-name=org.freedesktop.Notifications",
+            "--talk-name=org.kde.StatusNotifierWatcher",
+            "--talk-name=org.freedesktop.secrets",
+            "--filesystem=xdg-download",
+        ],
     },
 
     nsis: {
