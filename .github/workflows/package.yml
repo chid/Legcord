@@ -43,6 +43,17 @@ jobs:
               if: matrix.os == 'macos-latest'
               uses: samuelmeuli/action-snapcraft@v3
 
+            - name: Install Flatpak tooling
+              if: matrix.os == 'ubuntu-latest'
+              run: |
+                sudo apt-get update
+                sudo apt-get install -y flatpak flatpak-builder elfutils
+                flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+                flatpak install --user --noninteractive flathub \
+                  org.freedesktop.Platform//24.08 \
+                  org.freedesktop.Sdk//24.08 \
+                  org.electronjs.Electron2.BaseApp//24.08
+
             - name: Load Electron cache
               uses: actions/cache/restore@v4
               with:
@@ -67,6 +78,11 @@ jobs:
             - name: Build Electron for Linux (RPM, DEB, AppImage & ZIP)
               if: matrix.os == 'ubuntu-latest'
               run: pnpm electron-builder --armv7l --arm64 --x64 -l rpm deb appimage zip tar.gz
+
+            # flatpak-builder cannot cross-build, so x64 only on x86_64 runners
+            - name: Build Electron for Linux (Flatpak)
+              if: matrix.os == 'ubuntu-latest'
+              run: pnpm electron-builder --x64 -l flatpak
 
             - name: Save Electron Cache
               uses: actions/cache/save@v4
